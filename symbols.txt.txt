@@ -1,0 +1,7 @@
+<CMD>
+	USE SELECT FROM , ;
+</CMD>
+
+<DATA>
+	< > / , NAME TABLES_DEF TABLES_DATA
+</DATA>

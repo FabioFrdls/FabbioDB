@@ -1,0 +1,16 @@
+
+
+<TABLES_DEF>
+	User(
+	INT id,
+	STR name
+	)
+</TABLES_DEF>
+
+<TABLES_DATA>
+	User(
+	[1, "Gianni"],
+	[2, "Osvaldo"],
+	[3, "Edmondo"]
+	)
+</TABLES_DATA>
