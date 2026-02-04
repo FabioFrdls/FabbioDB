@@ -1,3 +1,5 @@
+//======================================fabbioDB==================================================//
+#include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -30,7 +32,9 @@ entity *createEntity(char *input, char type){
 	return e;   
 }
 
+// list functions
 
+// removes the element at the head of the list, and frees it
 void removel(entity *l){
 	if(l->dbList.head == NULL)
 		return;
@@ -43,6 +47,7 @@ void removel(entity *l){
 	free(e);
 }
 
+// removes the element at the head of the list, and returns it
 entity *peekl(entity *l){
 	if(l->dbList.head == NULL)
 		return NULL;
@@ -111,7 +116,13 @@ parser *createParser(char *line){
 
 //=========================================program exec================================================//
 
-
+/* this funciton is used to transform the string of symbols in an array.
+Note that the array has to be defined globally, since this function is 
+called by fShell.c, but it's ret value is used here.
+Also note that commas and semicolons do not have their specific position 
+in the array since the array is create by splitting on the spaces,
+so comma and semicolon remain binded to the previous string;
+this issue is properly handled in the compile function.*/
 char **strtoarr(char **arr, char *str){
 	size_t size = 10;
 	char *token = strtok(str, " ");
@@ -131,6 +142,12 @@ char **strtoarr(char **arr, char *str){
 	return arr;
 }
 
+
+/* this function checks if a given string is a symbol or not.
+If the string is a symbol, the function returns the index of the 
+symbols array at which position is stored the string;
+if not it returns -1
+*/
 int fetchSymbols(char *string, char **symbols){
 	int i  = 0;
 	char *ptr;
@@ -152,14 +169,18 @@ int fetchSymbols(char *string, char **symbols){
     return -1;
 }
 
-entity *compile1(char *line, char **symbols){
+/*this function takes the user input and transforms it in a list of entities each of which of the proper type*/
+entity *compile(char *line, char **symbols){
     entity *program = createEntity("", LIST_TYPE);
     parser *p = createParser(line);
     p->token = strtok(p->prog, " ");
     char type;
     int i = 0;
     entity *func = NULL;
-    entity *next = NULL;		// for colon and semicolon
+    /*since commas and semicolon come binded to the previous string,
+	in case the string contains one of them, an extra node is needed
+	in order to keep the two elements separated in the list*/
+    entity *next = NULL;	
     while(p->token != NULL){
     	size_t len = strlen(p->token);
     	if(len > 1){
@@ -173,7 +194,9 @@ entity *compile1(char *line, char **symbols){
 			next = createEntity(nexttok, SYM_TYPE);
 			}	
 		}
-    	
+    	/* once the comma/semicolon is trimmed out, we check for
+    	the type of the node which will correspond to the actual string
+    	*/
         int sym = fetchSymbols(p->token, symbols);
 		if(sym > -1){
             type = SYM_TYPE;
@@ -193,18 +216,16 @@ entity *compile1(char *line, char **symbols){
         p->token = strtok(NULL, " ");
     }
     free(p);
+    /* note that the function is added at the head of the list because
+	in the exec function, it is the first element to check*/
     if(func != NULL)
     	addFirstl(program, func);
     return program;
 }
 
-entity *compile2(entity *program){
-	
-	
-	return program;
-}
-
-void exec1(entity *program){
+/* this function takes the program list as input, and decides whether to call
+the function or not*/
+void exec(entity *program){
 	if(program == NULL){
 		printf("Nothing to execute\n");
 		return;
@@ -225,7 +246,7 @@ void exec1(entity *program){
 	else
 		printf("Complete statement...\n");
 }
-
+/*
 void exec(entity *program){
 	entity *e = program->dbList.head;
 	for(size_t i = 0; i < program->dbList.size; i++){
@@ -242,7 +263,7 @@ void exec(entity *program){
 		}	
 		e = e->next;
 	}
-}
+}*/
 
 //==============================================db functions==================================//
 
@@ -258,15 +279,34 @@ entity *dbUse(entity *prog){
 	}
 	entity *name = getl(prog, 1);
 	if(name->type == STR_TYPE){
-		FILE *db = fopen(name->dbString.str, "r+");
-		if(db == NULL)
-			printf("No existing schema with this name\n");
+		DIR *dir = opendir(name->dbString.str);
+    	if (dir == NULL) {
+        		printf("No existing schema with this name\n");
+        		return NULL;
+    	}
+		
+		printf("Using database '%s'\n", name->dbString.str);
+
+    	closedir(dir);
 	}
 	//printf("Open db name\n");
 	return NULL;
 }
 
-entity *dbSelect(entity *e){
+// for later
+entity *dbSelect(entity *prog){
 	printf("Select function\n");
+	
+	if(prog->dbList.size < 4){
+		printf("Missing arguments\n");
+		return NULL;
+	}
+	entity *next = prog->dbList.head;
+	char *tName = NULL;
+	for(size_t i = 0; i < prog->dbList.size; i++){
+		next = next->next;
+	}
+	if(head->next)
+	
 	return e;
 }

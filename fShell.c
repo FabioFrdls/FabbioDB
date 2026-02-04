@@ -1,14 +1,19 @@
+//======================================fShell==================================================//
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "utils.h"
+
+char cmdSymbols[] = "USE SELECT FROM , ;";
 
 
 int main(int argc, char **argv){
     char buff[1024];
 	
 	char **cmdSym = malloc(sizeof(char*)*10);
-	cmdSym = strtoarr(cmdSym, cmdSymbols);
+	char *copy = strdup(cmdSymbols);
+	cmdSym = strtoarr(cmdSym, copy);
 	
     while (1) {
         printf(CYAN "fsql>> " RESET);
@@ -21,8 +26,8 @@ int main(int argc, char **argv){
 			free(cmdSym);
 			return 0;
 		}
-		entity *prog = compile1(line, cmdSym);
-    	exec1(prog);
+		entity *prog = compile(line, cmdSym);
+    	exec(prog);
     }
 	free(cmdSym);
     return 0;

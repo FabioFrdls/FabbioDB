@@ -2,6 +2,8 @@
 #define INT_TYPE 0
 #define SYM_TYPE 1
 #define STR_TYPE 2
+//======================================utils==================================================//
+
 #define LIST_TYPE 3
 #define FUNC_TYPE 4
 
@@ -11,7 +13,7 @@
 #define GREEN   "\033[32m"
 //======================================data structs==================================================//
 
-static char cmdSymbols[] = {"USE SELECT FROM , ;"};
+extern char cmdSymbols[];
 //FILE *db;
 
 typedef struct entity {
@@ -49,7 +51,6 @@ typedef struct parser {
 entity *dbUse(entity *e);
 entity *dbSelect(entity *e);
 static entity *(*dbfunc[])() = {dbUse, dbSelect};
-
 void removel(entity *e);
 void addl(entity *l, entity *e);
 void deleteEntity(entity *e);
@@ -57,6 +58,6 @@ entity *createEntity(char *input, char type);
 parser *createParser(char *line);
 char **strtoarr(char **arr, char *str);
 int fetchSymbols(char *string, char **symbols);
-entity *compile1(char *line, char **symbols);
+entity *compile(char *line, char **symbols);
 void exec(entity *program);
-void exec1(entity *program);
+
